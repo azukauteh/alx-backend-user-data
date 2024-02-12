@@ -33,18 +33,17 @@ Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
 ```
 In the Authorization header, Basic indicates that Basic Authentication is being used, followed by a base64-encoded string of the username and password separated by a colon (:) .
 
-Security Considerations
-undefind
+# Security Considerations
 
-Base64 Encoding: The credentials are just base64-encoded, not encrypted or hashed, which means that they can be easily decoded if intercepted.
+- Base64 Encoding: The credentials are just base64-encoded, not encrypted or hashed, which means that they can be easily decoded if intercepted.
 
-No Session Management: Basic Authentication lacks session management. The credentials are sent with each request, which makes them vulnerable to interception.
+- No Session Management: Basic Authentication lacks session management. The credentials are sent with each request, which makes them vulnerable to interception.
 
-No Protection against Replay Attacks: Basic authentication does not prevent replay attacks.
+- No Protection against Replay Attacks: Basic authentication does not prevent replay attacks.
 
-Alternatives
+# Alternatives
 To ensure a more secure authentication, consider using options such as OAuth 2.0, JWT (JSON Web Tokens), or Token-Based Authentication.
 
-Conclusion
+# Conclusion
 
 Basic authentication is a simple way of authenticating users in web applications and APIs. Nevertheless, it has certain security limitations and might not work in all cases. Keep your security requirements in mind when implementing Basic Authentication in your project.
