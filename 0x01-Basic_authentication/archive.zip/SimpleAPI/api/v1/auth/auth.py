@@ -18,26 +18,31 @@ class Auth:
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
-        Determines if authentication is required for the given path.
-
-        Args:
-            path (str): The request path.
-            excluded_paths (List[str]): A list of paths excluded from
-                                        authentication.
-
-        Returns:
-            bool: True if authentication is required, False otherwise.
+        Requires authentication on every request.
+        Returns True if authentication is required, False otherwise.
         """
+        """ Return True if path is None or excluded_paths is None or empty"""
         if path is None or excluded_paths is None or len(excluded_paths) == 0:
             return True
 
+        """ Remove trailing slashes from path and excluded_paths"""
+        path = path.rstrip("/")
+        excluded_paths = [p.rstrip("/") for p in excluded_paths]
+
+        """ Check if path is in excluded_paths or a sub-path of any
+        excluded path
+        """
         for url in excluded_paths:
-            if url.endswith('*'):
-                if url[:-1] in path:
+            if url.endswith("*"):
+                """ Handle wildcard matching"""
+                if path.startswith(url[:-1]):
                     return False
             else:
-                if path in url or path + '/' in url:
+                """ Check for exact or sub-path match"""
+                if path == url or path.startswith(url + "/"):
                     return False
+
+        """ If no match  found, authentication is required"""
         return True
 
     def authorization_header(self, request=None) -> str:
