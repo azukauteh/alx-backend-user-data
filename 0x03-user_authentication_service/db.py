@@ -45,3 +45,28 @@ class DB:
         self._session.add(user)
         self._session.commit()
         return user
+
+    def find_user_by(self, **kwargs) -> User:
+        """
+        Find a user with given attributes.
+
+        Args:
+            **kwargs: Arbitrary keyword arguments representing the attributes to filter by.
+
+        Returns:
+            User: The User object found based on the input arguments.
+
+        Raises:
+            InvalidRequestError: If invalid query arguments are passed.
+            NoResultFound: If no results are found based on the input arguments.
+        """
+        for key in kwargs:
+            if not hasattr(User, key):
+                raise InvalidRequestError("Invalid query argument: {}".format(key))
+        try:
+            user = self._session.query(User).filter_by(**kwargs).first()
+            if user is None:
+                raise NoResultFound("No user found with the provided criteria.")
+            return user
+        except NoResultFound:
+            raise NoResultFound("No user found with the provided criteria.")
