@@ -41,28 +41,36 @@ class DB:
         Returns:
             User: The User object representing the newly added user.
         """
-        user = User(email=email, hashed_password=hashed_password)
-        self._session.add(user)
-        self._session.commit()
-        return user
+        try:
+            new_user = User(email=email, hashed_password=hashed_password)
+            self._session.add(new_user)
+            self._session.commit()
+            return new_user
+        except IntegrityError as e:
+            """ Handle integrity errors (e.g. duplicate )if necessary"""
+            self._session.rollback()
+            raise e
 
     def find_user_by(self, **kwargs) -> User:
         """
         Find a user with given attributes.
 
         Args:
-            **kwargs: Arbitrary keyword arguments representing the attributes to filter by.
+            **kwargs: Arbitrary keyword arguments representing the
+            attributes to filter by.
 
         Returns:
             User: The User object found based on the input arguments.
 
         Raises:
             InvalidRequestError: If invalid query arguments are passed.
-            NoResultFound: If no results are found based on the input arguments.
+            NoResultFound: If no results are found based on the input
+            arguments.
         """
         for key in kwargs:
             if not hasattr(User, key):
-                raise InvalidRequestError("Invalid query argument: {}".format(key))
+                raise InvalidRequestError("Invalid query argument: {}"
+                                          .format(key))
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
             if user is None:
