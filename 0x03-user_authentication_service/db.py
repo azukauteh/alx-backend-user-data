@@ -75,7 +75,15 @@ class DB:
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
             if user is None:
-                raise NoResultFound("No user found with the provided criteria.")
+                raise NoResultFound("No user found with  provided criteria")
             return user
         except NoResultFound:
             raise NoResultFound("No user found with the provided criteria.")
+
+    def update_user(self, user_id: int, session_id: str) -> None:
+        """Update the session ID for a user
+        """
+        user = self._session.query(User).filter_by(id=user_id).first()
+        if user:
+            user.session_id = session_id
+            self._session.commit()
