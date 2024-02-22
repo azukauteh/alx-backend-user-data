@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """flask Application"""
-from flask import Flask, jsonify, request, abort, make_response
+from flask import Flask, jsonify, request, abort, make_response,  redirect
 from auth import Auth
 
 
@@ -55,6 +55,17 @@ def logout():
     if user is not None:
         AUTH.destroy_session(user.id)
         return redirect("/")
+    abort(403)
+
+
+@app.route("/profile", strict_slashes=False)
+def profile():
+    """Gets and returns json data of user profile
+    """
+    session_id = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        return jsonify({"email": user.email})
     abort(403)
 
 
