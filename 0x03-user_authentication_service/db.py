@@ -35,10 +35,14 @@ class DB:
     def add_user(self, email: str, hashed_password: str) -> User:
         """Adds a new user to the data base
         """
-        user = User(email=email, hashed_password=hashed_password)
-        self._session.add(user)
-        self._session.commit()
-        return user
+        try:
+            user = User(email=email, hashed_password=hashed_password)
+            self._session.add(user)
+            self._session.commit()
+            return user
+        except IntegrityError:
+            self._session.rollback()
+            raise ValueError("User with the same email already exists")
 
     def find_user_by(self, **kwargs) -> User:
         """Find a user with given attributes
