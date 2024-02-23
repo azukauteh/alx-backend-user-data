@@ -31,26 +31,32 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) -> User:
-        """
-        Add a new user to the database.
 
-        Args:
-            email (str): The email of the user.
-            hashed_password (str): The hashed password of the user.
+def add_user(self, email: str, hashed_password: str) -> User:
+    """
+    Add a new user to the database.
 
-        Returns:
-            User: The User object representing the newly added user.
-        """
-        try:
-            new_user = User(email=email, hashed_password=hashed_password)
-            self._session.add(new_user)
-            self._session.commit()
-            return new_user
-        except IntegrityError as e:
-            """ Handle integrity errors (e.g. duplicate )if necessary"""
-            self._session.rollback()
-            raise e
+    Args:
+        email (str): The email of the user.
+        hashed_password (str): The hashed password of the user.
+
+    Returns:
+        User: The User object representing the newly added user.
+    """
+    """ Create a new User object"""
+    new_user = User(email=email, hashed_password=hashed_password)
+
+    try:
+        """ Add the new user to the session and commit the changes"""
+        self._session.add(new_user)
+        self._session.commit()
+    except IntegrityError as e:
+        """ Handle integrity errors (e.g., duplicate email)"""
+        self._session.rollback()
+        raise ValueError("User with the same email already exists")
+
+    """ Return the created User object"""
+    return new_user
 
     def find_user_by(self, **kwargs) -> User:
         """
