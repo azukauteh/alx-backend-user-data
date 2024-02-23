@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """DB module
 """
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError, NoResultFound
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+
 
 from user import Base, User
 
@@ -40,32 +41,15 @@ class DB:
         return user
 
     def find_user_by(self, **kwargs) -> User:
-        """
-        Find a user with given attributes.
-
-        Args:
-            **kwargs: Arbitrary keyword arguments representing the
-            attributes to filter by.
-
-        Returns:
-            User: The User object found based on the input arguments.
-
-        Raises:
-            InvalidRequestError: If invalid query arguments are passed.
-            NoResultFound: If no results are found based on the input
-            arguments.
+        """Find a user with given attributes
         """
         for key in kwargs:
             if not hasattr(User, key):
-                raise InvalidRequestError("Invalid query argument: {}"
-                                          .format(key))
-        try:
-            user = self._session.query(User).filter_by(**kwargs).first()
-            if user is None:
-                raise NoResultFound("No user found with  provided criteria")
-            return user
-        except NoResultFound:
-            raise NoResultFound("No user found with the provided criteria.")
+                raise InvalidRequestError
+        user = self._session.query(User).filter_by(**kwargs).first()
+        if user is None:
+            raise NoResultFound
+        return user
 
     def update_user(self, user_id: int, session_id: str) -> None:
         """Update the session ID for a user
